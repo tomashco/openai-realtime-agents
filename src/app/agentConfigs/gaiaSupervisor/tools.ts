@@ -29,7 +29,7 @@ export const generateImage = tool({
 
     return {
       imageUrl:
-        "https://sdmntprpolandcentral.oaiusercontent.com/files/00000000-2a30-620a-b3ed-1f286e730595/raw?se=2025-09-28T16%3A26%3A53Z&sp=r&sv=2024-08-04&sr=b&scid=9db15001-ac35-53d8-b88b-c2b5837b1401&skoid=b928fb90-500a-412f-a661-1ece57a7c318&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-09-28T15%3A21%3A52Z&ske=2025-09-29T15%3A21%3A52Z&sks=b&skv=2024-08-04&sig=pvI62O4CCyWsxhDyzXpydQs5TZfJaLATjkO0fCoAOX8%3D",
+        "https://images.pexels.com/photos/6009651/pexels-photo-6009651.jpeg",
       metadata: {},
     };
 

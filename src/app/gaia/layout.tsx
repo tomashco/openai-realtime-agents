@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "../globals.css";
+import s from "./layout.module.css";
 import "../lib/envSetup";
+// import classNames from "classnames";
 
 export const metadata: Metadata = {
   title: "Realtime API Agents",
@@ -14,7 +16,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`antialiased`}>{children}</body>
+      <body className={`antialiased`}>
+        <div className={s.page}>{children}</div>
+      </body>
     </html>
   );
 }

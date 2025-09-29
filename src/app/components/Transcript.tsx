@@ -71,9 +71,9 @@ function Transcript({
   };
 
   return (
-    <div className="flex flex-col flex-1 bg-white min-h-0 rounded-xl">
+    <div className="flex flex-col flex-1 min-h-0">
       <div className="flex flex-col flex-1 min-h-0">
-        <div className="flex items-center justify-between px-6 py-3 sticky top-0 z-10 text-base border-b bg-white rounded-t-xl">
+        <div className="flex items-center justify-between px-6 py-3 sticky top-0 z-10 text-base border-b">
           <span className="font-semibold">Transcript</span>
           <div className="flex gap-x-2">
             <button
@@ -96,7 +96,7 @@ function Transcript({
         {/* Transcript Content */}
         <div
           ref={transcriptRef}
-          className="overflow-auto p-4 flex flex-col gap-y-4 h-full"
+          className="overflow-auto p-8 flex flex-col gap-y-4 h-full z-10"
         >
           {[...transcriptItems]
             .sort((a, b) => a.createdAtMs - b.createdAtMs)
@@ -113,104 +113,122 @@ function Transcript({
                 guardrailResult,
               } = item;
 
-            if (isHidden) {
-              return null;
-            }
+              if (isHidden) {
+                return null;
+              }
 
-            if (type === "MESSAGE") {
-              const isUser = role === "user";
-              const containerClasses = `flex justify-end flex-col ${
-                isUser ? "items-end" : "items-start"
-              }`;
-              const bubbleBase = `max-w-lg p-3 ${
-                isUser ? "bg-gray-900 text-gray-100" : "bg-gray-100 text-black"
-              }`;
-              const isBracketedMessage =
-                title.startsWith("[") && title.endsWith("]");
-              const messageStyle = isBracketedMessage
-                ? 'italic text-gray-400'
-                : '';
-              const displayTitle = isBracketedMessage
-                ? title.slice(1, -1)
-                : title;
+              if (type === "MESSAGE") {
+                const isUser = role === "user";
+                const containerClasses = `flex justify-end flex-col ${
+                  isUser ? "items-end" : "items-start"
+                }`;
+                const bubbleBase = `max-w-lg p-3 ${
+                  isUser
+                    ? "bg-gray-900 text-gray-100"
+                    : "bg-gray-100 text-black"
+                }`;
+                const isBracketedMessage =
+                  title.startsWith("[") && title.endsWith("]");
+                const messageStyle = isBracketedMessage
+                  ? "italic text-gray-400"
+                  : "";
+                const displayTitle = isBracketedMessage
+                  ? title.slice(1, -1)
+                  : title;
 
-              return (
-                <div key={itemId} className={containerClasses}>
-                  <div className="max-w-lg">
-                    <div
-                      className={`${bubbleBase} rounded-t-xl ${
-                        guardrailResult ? "" : "rounded-b-xl"
-                      }`}
-                    >
+                return (
+                  <div key={itemId} className={containerClasses}>
+                    <div className="max-w-lg">
                       <div
-                        className={`text-xs ${
-                          isUser ? "text-gray-400" : "text-gray-500"
-                        } font-mono`}
-                      >
-                        {timestamp}
-                      </div>
-                      <div className={`whitespace-pre-wrap ${messageStyle}`}>
-                        <ReactMarkdown>{displayTitle}</ReactMarkdown>
-                      </div>
-                    </div>
-                    {guardrailResult && (
-                      <div className="bg-gray-200 px-3 py-2 rounded-b-xl">
-                        <GuardrailChip guardrailResult={guardrailResult} />
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            } else if (type === "BREADCRUMB") {
-              return (
-                <div
-                  key={itemId}
-                  className="flex flex-col justify-start items-start text-gray-500 text-sm"
-                >
-                  <span className="text-xs font-mono">{timestamp}</span>
-                  <div
-                    className={`whitespace-pre-wrap flex items-center font-mono text-sm text-gray-800 ${
-                      data ? "cursor-pointer" : ""
-                    }`}
-                    onClick={() => data && toggleTranscriptItemExpand(itemId)}
-                  >
-                    {data && (
-                      <span
-                        className={`text-gray-400 mr-1 transform transition-transform duration-200 select-none font-mono ${
-                          expanded ? "rotate-90" : "rotate-0"
+                        className={`${bubbleBase} rounded-t-xl ${
+                          guardrailResult ? "" : "rounded-b-xl"
                         }`}
                       >
-                        ▶
-                      </span>
-                    )}
-                    {title}
-                  </div>
-                  {expanded && data && (
-                    <div className="text-gray-800 text-left">
-                      <pre className="border-l-2 ml-1 border-gray-200 whitespace-pre-wrap break-words font-mono text-xs mb-2 mt-2 pl-2">
-                        {JSON.stringify(data, null, 2)}
-                      </pre>
+                        <div
+                          className={`text-xs ${
+                            isUser ? "text-gray-400" : "text-gray-500"
+                          } font-mono`}
+                        >
+                          {timestamp}
+                        </div>
+                        <div className={`whitespace-pre-wrap ${messageStyle}`}>
+                          <ReactMarkdown>{displayTitle}</ReactMarkdown>
+                        </div>
+                      </div>
+                      {guardrailResult && (
+                        <div className="bg-gray-200 px-3 py-2 rounded-b-xl">
+                          <GuardrailChip guardrailResult={guardrailResult} />
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              );
-            } else {
-              // Fallback if type is neither MESSAGE nor BREADCRUMB
-              return (
-                <div
-                  key={itemId}
-                  className="flex justify-center text-gray-500 text-sm italic font-mono"
-                >
-                  Unknown item type: {type}{" "}
-                  <span className="ml-2 text-xs">{timestamp}</span>
-                </div>
-              );
-            }
-          })}
+                  </div>
+                );
+              } else if (type === "BREADCRUMB") {
+                return (
+                  <div
+                    key={itemId}
+                    className="flex flex-col justify-start items-start text-gray-500 text-sm"
+                  >
+                    <span className="text-xs font-mono">{timestamp}</span>
+                    <div
+                      className={`whitespace-pre-wrap flex items-center font-mono text-sm text-gray-800 ${
+                        data ? "cursor-pointer" : ""
+                      }`}
+                      onClick={() => data && toggleTranscriptItemExpand(itemId)}
+                    >
+                      {data && (
+                        <span
+                          className={`text-gray-400 mr-1 transform transition-transform duration-200 select-none font-mono ${
+                            expanded ? "rotate-90" : "rotate-0"
+                          }`}
+                        >
+                          ▶
+                        </span>
+                      )}
+                      {title}
+                    </div>
+                    {expanded && data && (
+                      <div className="text-gray-800 text-left">
+                        <pre className="border-l-2 ml-1 border-gray-200 whitespace-pre-wrap break-words font-mono text-xs mb-2 mt-2 pl-2">
+                          {JSON.stringify(data, null, 2)}
+                        </pre>
+                      </div>
+                    )}
+                    {title === "function call result: generateImage" && (
+                      <div>
+                        <img
+                          src={data?.imageUrl}
+                          // "https://images.pexels.com/photos/6009651/pexels-photo-6009651.jpeg"
+                          // src={data?.imageUrl}
+                          // `/api/imagefetcher?url=${encodeURIComponent(
+                          // "https://i.imgur.com/iPeCach.png"
+                          // "https://sdmntprpolandcentral.oaiusercontent.com/files/00000000-2a30-620a-b3ed-1f286e730595/raw?se=2025-09-28T16%3A26%3A53Z&sp=r&sv=2024-08-04&sr=b&scid=9db15001-ac35-53d8-b88b-c2b5837b1401&skoid=b928fb90-500a-412f-a661-1ece57a7c318&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-09-28T15%3A21%3A52Z&ske=2025-09-29T15%3A21%3A52Z&sks=b&skv=2024-08-04&sig=pvI62O4CCyWsxhDyzXpydQs5TZfJaLATjkO0fCoAOX8%3D"
+                          // )}`}
+                          alt=""
+                          width="600"
+                          height="600"
+                        />
+                      </div>
+                    )}
+                  </div>
+                );
+              } else {
+                // Fallback if type is neither MESSAGE nor BREADCRUMB
+                return (
+                  <div
+                    key={itemId}
+                    className="flex justify-center text-gray-500 text-sm italic font-mono"
+                  >
+                    Unknown item type: {type}{" "}
+                    <span className="ml-2 text-xs">{timestamp}</span>
+                  </div>
+                );
+              }
+            })}
         </div>
+        <div className="absolute bg-white opacity-50 inset-0 mx-6 rounded-xl"></div>
       </div>
-
-      <div className="p-4 flex items-center gap-x-2 flex-shrink-0 border-t border-gray-200">
+      <div className="p-4 flex items-center gap-x-2 flex-shrink-0 border-t border-gray-200 z-10">
         <input
           ref={inputRef}
           type="text"
@@ -221,7 +239,7 @@ function Transcript({
               onSendMessage();
             }
           }}
-          className="flex-1 px-4 py-2 focus:outline-none"
+          className="flex-1 ml-4 rounded-xl px-4 py-2 focus:outline-none "
           placeholder="Type a message..."
         />
         <button
