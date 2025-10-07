@@ -22,49 +22,36 @@ export const generateImage = tool({
     additionalProperties: false,
   },
   execute: async (input) => {
-    const { prompt, size } = input as {
+    const { prompt } = input as {
       prompt: string;
-      size?: string;
     };
 
-    return {
-      imageUrl:
-        "https://images.pexels.com/photos/6009651/pexels-photo-6009651.jpeg",
-      metadata: {},
-    };
+    try {
+      const response = await fetch("/api/comfy-ui", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt,
+        }),
+      });
 
-    // try {
-    //   const response = await fetch(
-    //     "https://api.openai.com/v1/images/generations",
-    //     {
-    //       method: "POST",
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //         Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-    //       },
-    //       body: JSON.stringify({
-    //         model: "gpt-image-1",
-    //         prompt,
-    //         size: size || "1024x1024",
-    //       }),
-    //     }
-    //   );
+      if (!response.ok) {
+        console.warn("OpenAI Images API error:", response);
+        return { error: "Impossibile generare l’immagine al momento." };
+      }
 
-    //   if (!response.ok) {
-    //     console.warn("OpenAI Images API error:", response);
-    //     return { error: "Impossibile generare l’immagine al momento." };
-    //   }
-
-    //   const result = await response.json();
-    //   return {
-    //     imageUrl: result.data?.[0]?.url || null,
-    //     metadata: result,
-    //   };
-    // } catch (err) {
-    //   console.error("generateImage error:", err);
-    //   return {
-    //     error: "Si è verificato un errore nella generazione dell’immagine.",
-    //   };
-    // }
+      const result = await response.json();
+      return {
+        imageUrl: result.imageUrl || null,
+        metadata: result.metadata || null,
+      };
+    } catch (err) {
+      console.error("generateImage error:", err);
+      return {
+        error: "Si è verificato un errore nella generazione dell’immagine.",
+      };
+    }
   },
 });
